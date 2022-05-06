@@ -1,0 +1,18 @@
+services:
+  back:
+   build: ./api-sugerencias
+   ports:
+     - "8081:80"
+   volumes:
+     - "./api-sugerencias/app.py:/app.py"
+   networks:
+      - sugerenciasConnection
+  front:
+   build: ./cliente
+   ports:
+    - "8082:80"
+networks:
+   sugerenciasConnection:
+     driver: bridge
+     ipam:
+       driver: default
