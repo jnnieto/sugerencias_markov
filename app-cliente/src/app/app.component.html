@@ -1,19 +1,40 @@
-<h1>Sugerencias de Markov</h1>
+<h1>Sugerencia de palabras: Cadenas de Markov</h1>
 
-<form class="example-form" [formGroup]="wordForm">
-  <mat-form-field class="example-full-width" appearance="fill">
-    <mat-label>Palabra</mat-label>
-    <textarea type="text" placeholder="Pick one" aria-label="Number" (ngModelChange)="getPredictWord($event)" matInput formControlName="word"></textarea>
-    <mat-error *ngIf="wordForm.controls.word.hasError('required')">La palabra a sugerir es <strong>obligatoria</strong></mat-error>
-  </mat-form-field>
-</form>
+<div fxLayout="row" fxLayoutAlign="space-evenly center">
+  <ul class="galeria tape">
+    <li>
+      <figure><img src="../assets/nobel.jpg" alt="image" width="100%" height="100%">
+        <figcaption>Gabriel García Márquez, Premio Nobel de literatura el 8 de diciembre de 1982.</figcaption>
+      </figure>
+    </li>
+  </ul>
 
-<main *ngIf="suggested_words">
-  <div *ngFor="let word of suggested_words">
-    <button color="accent" mat-raised-button type="submit" (click)="addWordToInput(word)">
-      {{ word }}
-    </button>
+  <form class="words-form" [formGroup]="wordForm">
+    <h3>TU TEXTO, AQUÍ 👇</h3>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <textarea type="text" placeholder="Escribe una palabra" aria-label="Number"
+        (ngModelChange)="getPredictWord($event)" matInput formControlName="word"></textarea>
+      <mat-error *ngIf="wordForm.controls.word.hasError('required')">Este campo es
+        <strong>obligatorio</strong>
+      </mat-error>
+    </mat-form-field>
+  </form>
+
+  <div class="suggested">
+    <h3>Palabras sugeridas:</h3>
+    <main *ngIf="suggested_words" gdColumns="1fr 1fr 1fr 1fr 1fr" gdColumns.lt-md="1fr 1fr 1fr 1fr"
+      gdColumns.xs="1fr 1fr 1fr" gdGap="16px">
+      <div *ngFor="let word of suggested_words">
+        <button color="primary" mat-raised-button type="submit" (click)="addWordToInput(word)">
+          {{ word }}
+        </button>
+      </div>
+    </main>
   </div>
-</main>
+  <p>{{ input_chain }}</p>
+</div>
 
-<p>{{ input_chain }}</p>
+<footer>
+  Realizado por: Johann Nicolas Nieto Cardenas & Laura Tatiana Ramos
+  Villanueva.
+</footer>
