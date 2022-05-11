@@ -1,23 +1,19 @@
 <h1>Sugerencias de Markov</h1>
 
-<form (ngSubmit)="getPredictWord()" class="example-form" [formGroup]="wordForm">
+<form class="example-form" [formGroup]="wordForm">
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Palabra</mat-label>
-    <input type="text" placeholder="Pick one" aria-label="Number" matInput formControlName="word">
+    <textarea type="text" placeholder="Pick one" aria-label="Number" (ngModelChange)="getPredictWord($event)" matInput formControlName="word"></textarea>
     <mat-error *ngIf="wordForm.controls.word.hasError('required')">La palabra a sugerir es <strong>obligatoria</strong></mat-error>
-    <!-- [matAutocomplete]="auto"> -->
-    <!-- <mat-autocomplete #auto="matAutocomplete">
-      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-        {{option}}
-      </mat-option>
-    </mat-autocomplete> -->
   </mat-form-field>
-  <button color="accent" mat-raised-button type="submit">
-    Sugerir palabra
-  </button>
 </form>
 
-<div *ngIf="newWord">
-  <h1>Palabra sugerida</h1>
-  <p><strong>{{ newWord }}</strong></p>
-</div>
+<main *ngIf="suggested_words">
+  <div *ngFor="let word of suggested_words">
+    <button color="accent" mat-raised-button type="submit" (click)="addWordToInput(word)">
+      {{ word }}
+    </button>
+  </div>
+</main>
+
+<p>{{ input_chain }}</p>

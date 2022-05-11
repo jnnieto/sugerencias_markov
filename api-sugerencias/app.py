@@ -1,7 +1,6 @@
-from webbrowser import get
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import numpy as np
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -20,9 +19,17 @@ app.add_middleware(
 
 lexicon = {}
 
+class NewWord(BaseModel):
+    word: str
+    new_word: str
 
 def agregar_palabras(current: str, next_word: str) -> None:
-    
+    characters_ignored = '.,;:¿?»«'
+
+    for x in range(len(characters_ignored)):
+        current = current.replace(characters_ignored[x], '')
+        next_word = next_word.replace(characters_ignored[x], '')
+
     if current not in lexicon:
         lexicon.update({current: {next_word: 1}})
         return
@@ -36,29 +43,42 @@ def agregar_palabras(current: str, next_word: str) -> None:
 
     lexicon[current] = options
 
+def adjust_probabilities():
+    for word, transition in lexicon.items():
+        transition = dict((key, value / sum(transition.values())) for key, value in transition.items())
+        lexicon[word] = transition
+
+
 with open('texto.txt', encoding="utf-8") as dataset:
     for line in dataset:
         words = line.strip().split(' ')
         for i in range(len(words) - 1):
-            agregar_palabras(words[i], words[i+1])
-
-# Adjust propability
-for word, transition in lexicon.items():
-    transition = dict((key, value / sum(transition.values())) for key, value in transition.items())
-    lexicon[word] = transition
+            agregar_palabras(words[i].lower(), words[i+1].lower())
+    adjust_probabilities()
 
 
 def predict_word(word: str):
     if word not in lexicon:
-        return 'Palabra no encontrada'
+        return
     else:
         options = lexicon[word]
-        return np.random.choice(list(options.keys()), p=list(options.values()))
+        sorted_keys = sorted(options, key=options.get)
+        sorted_options = {}
 
+        for w in sorted_keys:
+            sorted_options[w] = options[w]
+
+        return list(sorted_options.keys());
 
 @app.get('/sugerir/')
 def sugerir_palabra(word: str = ''):
-    return predict_word(word)
+    palabras = predict_word(word.lower())
+    return palabras
 
 
-
+@app.post('/agregar/')
+def agregar_palabras(newWord: NewWord):
+    agregar_palabras(newWord.word.lower(), newWord.new_word.lower())
+    palabras = predict_word(newWord.word.lower())
+    adjust_probabilities()
+    return palabras
