@@ -13,7 +13,7 @@
     <h3>TU TEXTO, AQUÍ 👇</h3>
     <mat-form-field class="example-full-width" appearance="fill">
       <textarea type="text" placeholder="Escribe una palabra" aria-label="Number"
-        (ngModelChange)="getPredictWord($event)" matInput formControlName="word"></textarea>
+        (keyup.space)="getPredictWord($event)" matInput formControlName="word"></textarea>
       <mat-error *ngIf="wordForm.controls.word.hasError('required')">Este campo es
         <strong>obligatorio</strong>
       </mat-error>

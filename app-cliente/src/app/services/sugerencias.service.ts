@@ -22,7 +22,8 @@ export class SugerenciasService {
 
   agregarNuevaPalabra(newWord: NewWord) {
     return this.http.post<string[]>(`${baseUrl}/agregar/`, {
-      newWord
+      word: newWord.word,
+      new_word: newWord.new_word
     })
   }
 

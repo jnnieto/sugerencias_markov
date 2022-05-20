@@ -11,7 +11,7 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -77,7 +77,7 @@ def sugerir_palabra(word: str = ''):
 
 
 @app.post('/agregar/')
-def agregar_palabras(newWord: NewWord):
+def agregar(newWord: NewWord):
     agregar_palabras(newWord.word.lower(), newWord.new_word.lower())
     palabras = predict_word(newWord.word.lower())
     adjust_probabilities()

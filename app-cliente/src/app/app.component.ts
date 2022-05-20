@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { SugerenciasService } from './services/sugerencias.service';
 
 @Component({
@@ -19,6 +20,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     private sugerenciasService: SugerenciasService,
+    private snack: MatSnackBar
   ) {
     this.wordForm = new FormGroup({
       word: new FormControl('', [
@@ -32,35 +34,31 @@ export class AppComponent implements OnInit {
   }
 
   getPredictWord(event: any): void {
-    const words = event.split(' ');
 
+    const words = event.target.value;
+    const array = words.split(' ');
+    const newword = array[array.length - 2]
 
-    this.suggested_words = []
     if (this.wordForm.valid) {
-      this.sugerenciasService.sugerirPalabra(words[words.length - 1]).subscribe(suggested_words => {
-        if (suggested_words) {
+      this.sugerenciasService.sugerirPalabra(newword).subscribe(suggested_words => {
+        if (!suggested_words && array.length > 2) {
+          const preWord = array[array.length - 3];
+          this.sugerenciasService.agregarNuevaPalabra({ word: preWord, new_word: newword}).subscribe(resp => {
+            this.suggested_words = suggested_words;
+            this.snack.open('Se ha detectado una nueva palabra', 'OK', {
+              duration: 3000
+            })
+          });
+        } else {
           this.suggested_words = suggested_words;
-        } /* else {
-           const newwords: NewWord = {
-            word: words[words.length - 2],
-            new_word: words[words.length - 1]
-          }
-
-          console.log(newwords);
-
-          this.sugerenciasService.agregarNuevaPalabra(newwords).subscribe(new_suggested_words => {
-            if (new_suggested_words) {
-              this.suggested_words = suggested_words;
-            }
-          })
-        } */
+        }
       })
 
     }
   }
 
   addWordToInput(newWord: string) {
-    this.wordForm.controls['word'].setValue(this.wordForm.controls['word'].value + ' ' + newWord)
+    this.wordForm.controls['word'].setValue(this.wordForm.controls['word'].value + newWord)
   }
 
 }
